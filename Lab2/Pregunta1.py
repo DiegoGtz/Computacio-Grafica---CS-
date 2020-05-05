@@ -19,13 +19,44 @@ def Histograma(imagen):
 	plt.show()
 	cv2.destroyAllWindows()	
 
-def  Contrast_Stretching(width, height ,a , b ):
+def  Contrast_Stretching(img,width, height ,a , b ):
 	_w = width
 	_h = height
 
+	_matriz = np.array(img)
+	_matrizOUT = []
+
+	min, max = _matriz[0][0],_matriz[0][0]
+
+	for y in range(0, _h):
+		for x in range(0,_w):
+			_token = _matriz[y][x] 	
+			if(_token < min): 
+				min = _token
+			if(_token > max):
+				max = _token
+
+	c,d = min, max
 
 
-	print (_w +1 ,_h, a,b )
+	#Aplicando la Formula 
+	#(F[x,y] - c)*(b-a)/(d-c) + a
+
+	# (b-a) /(d-c)
+	_div = (b - a )/ (d - c ) 
+
+
+	#Aplicando la formula en cada F[x,y]
+
+	for y in range(0, _h):
+		_matrizOUT.append([])
+		for x in range(0,_w):
+			_token2 = _matriz[y][x]
+			_resultado = (_token2 - c)*_div + a
+			_matrizOUT[y].append(_resultado)
+	_toNP = np.array(_matrizOUT)
+	cv2.imwrite("Contrast_Stretching.jpg",_toNP)
+		
 
 
 
@@ -33,7 +64,7 @@ if __name__ == "__main__":
     
 	#Obtenemos el Histograma de la imagen
 	imagen = 'contr2.jpg'
-	Histograma(imagen)
+	#Histograma(imagen)
 
 	#Stretching 
 	a,b = 0, 255
@@ -42,4 +73,4 @@ if __name__ == "__main__":
 	width, height = img.shape[:2]
 
 
-	Contrast_Stretching(width,height,a,b)
+	Contrast_Stretching(img,width,height,a,b)
