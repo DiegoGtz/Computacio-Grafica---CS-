@@ -65,8 +65,7 @@ if __name__ == "__main__":
 
 
 	img  = cv2.imread(imagen,0)
-	#width, height = img.shape[:2]
-	#Contrast_Stretching(img,width,height,a,b)
+
 
 	
 	Histograma('Contrast_Stretching.jpg')
