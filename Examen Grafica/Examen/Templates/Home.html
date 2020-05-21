@@ -1,0 +1,69 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title> {% block title %}Operadores {% endblock%} </title>
+	<link href='/static/img/miniogo.png' rel="icon">
+	<link rel="stylesheet" href="{% static 'css/newcss/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/styles1.css'%}">
+	<link rel="stylesheet" href="{% static 'css/elegant-icons-style.css'%}">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Poppins:300,400,500,700" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'lib/font-awesome/css/font-awesome.min.css' %}" >
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<!--==========================
+  Header
+============================-->
+{% block header %}
+  <header id = "header">
+  	<div class = "container">
+  		<div id = "logo" class = "pull-left">
+  			<a href="#hero">Computacion Grafica</a>
+  		</div>
+  		<nav id="nav-menu-container">
+			<ul class="nav-menu">
+				<li class="menu-active" ><a href=""> Inicio</a> </li>	
+	
+
+			</ul>
+  		</nav>
+  	</div>
+ </header>
+ {% endblock %}
+<!--==========================
+    Hero Section
+============================-->
+{% block content %}
+	<section id = "hero">
+		<div class="hero-container">
+			<h1>Grafica</h1>
+			<h2></h2>
+			<a href="{% url 'Home2:PageOperador' %}"  class="btn-get-started">Iniciar</a>
+		</div>	
+	</section>	
+{% endblock %}
+<main id="main">  
+   
+{% block Registro %}    
+{% endblock %}
+{% block BloqueLogin%}
+{% endblock %}
+{% block services %}
+{% endblock %}
+{% block portafolio %}
+{% endblock %}
+</main>
+<script src="{% static 'js/jquery/jquery-migrate.min.js' %}"></script>
+<script src="{% static 'js/jquery/superfish.min.js' %}"></script>
+<script src="{% static 'js/jquery/wow.min.js' %}"></script>
+<script src="{% static 'js/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js/jquery/contactform.js' %}"></script>
+<script src="{% static 'js/jquery/main.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.js' %}"></script>
+<script src="{% static 'js/jquery.js' %}"></script>
+</body>
+</html>
