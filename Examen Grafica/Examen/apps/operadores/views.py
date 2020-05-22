@@ -14,17 +14,11 @@ import numpy as np
 from matplotlib import pyplot as plt 
 import	 math 
 
-
-
 def inicio(request):
     return render(request,'Home.html')
 
 class Algoritmos ():
-
-
-
 	def Outlier_Contrast_Stretching(img1, a,b, Low, High):
-
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
 		width, height = img.shape[:2]

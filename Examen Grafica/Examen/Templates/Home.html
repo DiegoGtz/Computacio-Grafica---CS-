@@ -39,18 +39,19 @@
 {% block content %}
 	<section id = "hero">
 		<div class="hero-container">
-			<h1>Grafica</h1>
+			<h1>Computacion Grafica</h1>
 			<h2></h2>
+
 			<form action="{% url 'Home2:PageOperador' %}" method='post'>{% csrf_token %}
-			<select name="fase" id="">Outlier_Contrast_Stretching
-				
+			<select name="fase" class="custom-select"  id="">
 				<option value="Outlier_C.Stretching">Outlier C.Stretching</option>
 				<option value="Contrast_stretching">Contrast stretching</option>
 				<option value="E.Histograma">Ecualizacion de Histograma</option>
-				<option value="O.Logaritmico">O.Logaritmico </option>
-				<option value="O.Raiz">O.Raiz</option>
-				<option value="O.Exponencial">O.Exponencial</option>
-				<option value="O.RaiseToPower">O.RaiseToPower</option>
+				<option value="O.Logaritmico">Operador Logaritmico </option>
+				<option value="O.Raiz">Operador Raiz</option>
+				<option value="O.Exponencial">Operador Exponencial</option>
+				<option value="O.RaiseToPower">Operador RaiseToPower</option>
+				<option value="O.RaiseToPower">Cascada</option>
 			</select>	
 			<h2></h2>	
 			<button type="submit"   class="btn btn-secondary btn-lg">Iniciar</button>
