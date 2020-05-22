@@ -17,7 +17,6 @@ def operador_Raise_to_power(img1,c,r):
 		for x in range(0,_h):
 			_token2 = _matriz[y][x]
 			_resultado = c*math.pow(_token2,r)
-
 			if(_resultado < 0) : 
 				_resultado = 0
 			elif(_resultado > 255):
