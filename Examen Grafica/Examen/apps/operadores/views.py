@@ -55,16 +55,16 @@ class Algoritmos ():
 			_matrizOUT.append([])
 			for x in range(0,_h):
 				_token2 = _matriz[y][x]
-				print(c,_token2)
+				#print(c,_token2)
 				_resultado = c*math.sqrt(_token2)
-				print(_resultado)
+				#print(_resultado)
 				if(_resultado < 0) : 
 					_resultado = 0
 				elif(_resultado > 255):
 					_resultado = 255
 				_matrizOUT[y].append(_resultado)
 		Result = np.array(_matrizOUT)
-		print(Result)
+		#print(Result)
 		salidaImg = "static/operador_Root50" + imagen
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
@@ -95,6 +95,7 @@ class Algoritmos ():
 		
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
+
 	def operador_Exponencial(img1,c,b):
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
