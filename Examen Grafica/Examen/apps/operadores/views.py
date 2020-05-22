@@ -21,6 +21,114 @@ def inicio(request):
 
 class Algoritmos ():
 
+
+
+	def Outlier_Contrast_Stretching(img1, a,b, Low, High):
+
+		imagen = img1 
+		img  = cv2.imread(imagen,0)
+		width, height = img.shape[:2]
+		_w 			= width
+		_h 			= height	
+		_matriz 	= np.array(img)
+		_matrizOUT 	= []
+		_Paleta 	= [] 
+		for y in range(0, _h):
+			for x in range(0,_w):
+				_token = _matriz[y][x]
+				_Paleta.append(_token)		
+		_Paleta.sort()
+		c = _Paleta[int((_w*_h)*(Low/100.0))]
+		d = _Paleta[int((_w*_h)*(High/100.0))]
+		#print c, d
+		_div =((b - a )/ (d - c )) 
+		int(b)
+		for y in range(0, _h):
+			_matrizOUT.append([])
+			for x in range(0,_w):
+				_token2 = _matriz[y][x]	
+				_resultado = (int(_token2) - int(c))*int(_div) + int(a)
+				_matrizOUT[y].append(_resultado)
+
+				if(_resultado > 255):
+					_resultado = 255
+				if(_resultado < 0 ):
+					_resultado = 0
+		_toNP = np.array(_matrizOUT)
+		salidaImg = "static/Outlier_Contrast_Stretching" + imagen
+		cv2.imwrite(salidaImg,_toNP)
+		return salidaImg
+
+	def Contrast_Stretching(img1,a , b ):
+		imagen = img1 
+		img  = cv2.imread(imagen,0)
+		width, height = img.shape[:2]
+		_w 			= width
+		_h 			= height
+		_matriz 	= np.array(img)
+		_matrizOUT 	= []
+		min, max 	= _matriz[0][0],_matriz[0][0]
+		for y in range(0, _h):
+			for x in range(0,_w):
+				_token = _matriz[y][x] 	
+				if(_token < min): 
+					min = _token
+				if(_token > max):
+					max = _token
+		c,d = min, max
+		#Aplicando la Formula 
+		#(F[x,y] - c)*(b-a)/(d-c) + a
+		# (b-a) /(d-c)
+		_div = (b - a )/ (d - c ) 
+		#Aplicando la formula en cada F[x,y]
+		for y in range(0, _h):
+			_matrizOUT.append([])
+			for x in range(0,_w):
+				_token2 = _matriz[y][x]
+				_resultado = (_token2 - c)*_div + a
+				_matrizOUT[y].append(_resultado)
+		_toNP = np.array(_matrizOUT)
+		salidaImg = "static/Contrast_Stretching" + imagen
+		cv2.imwrite(salidaImg,_toNP)
+		return salidaImg
+
+	def ecualizacion_histograma(img1):
+		imagen = img1 
+		img  = cv2.imread(imagen,0)
+		width, height = img.shape[:2]
+		_w 			= width
+		_h 			= height	
+		_matriz 	= np.array(img)
+		_matrizOUT 	= []
+		_n	= [] 
+		_pix = width*height
+		_L = 256
+		_S = dict()
+		for i in range(0,_L):
+			_n.append(0);
+		for y in range(0, _w):
+			for x in range(0,_h):
+				_token = _matriz[y][x]
+				_n[_token] = _n[_token] + 1 
+		_tmp3 = 0
+		for n in range(0,_L):
+			_tmp = float(_n[n])
+			_tmp2 = float(_pix)
+			_tmp3 = _tmp3 + (_tmp/_tmp2)		
+			_res = int(_tmp3*(_L-1))
+			_S[n] = _res
+		for y in range(0, _w):
+			_matrizOUT.append([])
+			for x in range(0,_h):
+				_token2 = _matriz[y][x]
+				newColor = _S[_token2]
+				_matrizOUT[y].append(newColor)
+		Result = np.array(_matrizOUT)
+		salidaImg = "static/ecualizacion_de_histograma" + imagen
+		
+		cv2.imwrite(salidaImg,Result)
+		return salidaImg
+
 	def operador_logaritmo(img1,c):
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
@@ -55,16 +163,13 @@ class Algoritmos ():
 			_matrizOUT.append([])
 			for x in range(0,_h):
 				_token2 = _matriz[y][x]
-				#print(c,_token2)
 				_resultado = c*math.sqrt(_token2)
-				#print(_resultado)
 				if(_resultado < 0) : 
 					_resultado = 0
 				elif(_resultado > 255):
 					_resultado = 255
 				_matrizOUT[y].append(_resultado)
 		Result = np.array(_matrizOUT)
-		#print(Result)
 		salidaImg = "static/operador_Root50" + imagen
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
@@ -83,7 +188,6 @@ class Algoritmos ():
 			for x in range(0,_h):
 				_token2 = _matriz[y][x]
 				_resultado = c*math.pow(_token2,r)
-
 				if(_resultado < 0) : 
 					_resultado = 0
 				elif(_resultado > 255):
@@ -95,7 +199,6 @@ class Algoritmos ():
 		
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
-
 	def operador_Exponencial(img1,c,b):
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
@@ -126,6 +229,13 @@ class Operadores():
 		
 	def PageOperador(request):
 		tipo = request.POST['fase']
+
+		if(tipo == "Outlier_C.Stretching"):
+			return render(request,'Outlier_Contrast_Stretching.html',{"labels":tipo})	
+		if(tipo == "Contrast_stretching"):
+			return render(request,'Contrast_stretching.html',{"labels":tipo})		
+		if(tipo == "E.Histograma"):
+			return render(request,'Ecualizacion_Histograma.html',{"labels":tipo})
 		if(tipo == "O.Logaritmico"):
 			return render(request,'PageOperador.html',{"labels":tipo})
 
@@ -148,7 +258,25 @@ class Operadores():
 		fs = FileSystemStorage()
 		filename = fs.save(myfile.name, myfile)
 		file_name = fs.url(filename)
-	
+		if(tipo == "Outlier_C.Stretching"):
+			a = request.POST['a']
+			b = request.POST['b']
+			Low = request.POST['Low']
+			Max = request.POST['Max']
+			resultado = Algoritmos.Outlier_Contrast_Stretching(file_name,int(a),int(b),int(Low),int(Max))
+
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+		if(tipo == "Contrast_stretching"):
+			a = request.POST['a']
+			b = request.POST['b']
+			resultado = Algoritmos.Contrast_Stretching(file_name,int(a),int(b))
+
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+
+		if(tipo == "E.Histograma"):
+			resultado = Algoritmos.ecualizacion_histograma(file_name)
+
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
 		if(tipo == "O.Logaritmico"):
 			c = request.POST['c']
 			resultado = Algoritmos.operador_logaritmo(file_name,int(c))

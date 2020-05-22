@@ -1,0 +1,67 @@
+{% extends 'Home.html' %}
+{%block content%}
+{%endblock%}
+{% block services %}
+    <!--Contenedor Para poder Cargar Imagenes-->
+    <section id="services">
+      <div class="container wow fadeIn">
+      	<br>
+      	<br>
+      	<div class="section-header">
+          	<h3 class="section-title">Analizador de imagen {{labels}}</h3>
+          	<br>
+          	<p class="section-description">Ingrese la imagen que desea Analizar</p>
+     
+  		 </div>
+
+		<div class="box">
+			<h4 class="title"><i class="fa fa-camera"></i>&nbsp Add Image</h4>
+			<div class="drag-drop">
+ 				<form action="{% url 'Home2:ControladorOperador' %}" method='post' enctype="multipart/form-data">{% csrf_token %}
+ 				<p class="section-description">Seleccione los parametros y la imagen</p>
+				<label for=""> a = </label>
+				<input type="text" id="" name="a">
+				<label for=""> b = </label>
+				<input type="text" id="" name="b">
+				<br>
+				<label for=""> Low</label>
+				<input type="text" id="" name="Low">
+				<label for=""> Max</label>
+				<input type="text" id="" name="Max">	
+				<input type="hidden" id="" name="Tipo" value={{labels}} >	
+        		<input type="file"  id="files" name="file1" />	
+        		<br>
+        		<br>
+       			<output id="list"></output>
+		        <script>
+		              function archivo(evt) {
+		                  var files = evt.target.files; // FileList object
+		             
+		                  // Obtenemos la imagen del campo "file".
+		                  for (var i = 0, f; f = files[i]; i++) {
+		                    //Solo admitimos imágenes.
+		                    if (!f.type.match('image.*')) {
+		                        continue;
+		                    }
+		                    var reader = new FileReader();
+		                    reader.onload = (function(theFile) {
+		                        return function(e) {
+		                          // Insertamos la imagen
+		                         document.getElementById("list").innerHTML = ['<img class="thumb" src="', e.target.result,'" title="', escape(theFile.name), 'WIDTH="400px" HEIGHT="400px" "/>'].join('');
+		                        };
+		                    })(f);
+		                    reader.readAsDataURL(f);
+		                  }
+		              }
+		              document.getElementById('files').addEventListener('change', archivo, false);
+		      </script>
+			  </div>
+			  <br>
+			 <button type="submit" class="btn btn-outline-secondary">Analyze</button>
+			  </form>
+		</div>
+      </div>
+    </section>
+{% endblock %}
+{% block portafolio %}
+{% endblock %}
