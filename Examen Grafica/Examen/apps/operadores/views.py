@@ -18,6 +18,31 @@ def inicio(request):
     return render(request,'Home.html')
 
 class Algoritmos ():
+
+
+	def Thresholding(img1,min,max):
+		imagen = img1
+		img  = cv2.imread(imagen)
+		alto, ancho = img.shape[:2]
+		matriz3= np.array(img)
+		matriz = []
+
+		for y in range(0, alto):
+			matriz.append([])
+			for x in range(0,ancho):
+				b = img.item(y, x, 0)
+				g = img.item(y, x, 1)
+				r = img.item(y, x, 2)
+				if (b > min and b <max)  and (g > min and g <max ) and (r > min and r <max):
+					matriz[y].append(255)#Blanco
+				else:
+					matriz[y].append(0)#Negro
+		_toNP = np.array(matriz)
+		salidaImg = "static/Thresholding" + imagen
+		cv2.imwrite(salidaImg,_toNP)		
+		return salidaImg
+
+
 	def Outlier_Contrast_Stretching(img1, a,b, Low, High):
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
@@ -52,7 +77,6 @@ class Algoritmos ():
 		salidaImg = "static/Outlier_Contrast_Stretching" + imagen
 		cv2.imwrite(salidaImg,_toNP)
 		return salidaImg
-
 	def Contrast_Stretching(img1,a , b ):
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
@@ -85,7 +109,6 @@ class Algoritmos ():
 		salidaImg = "static/Contrast_Stretching" + imagen
 		cv2.imwrite(salidaImg,_toNP)
 		return salidaImg
-
 	def ecualizacion_histograma(img1):
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
@@ -122,7 +145,6 @@ class Algoritmos ():
 		
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
-
 	def operador_logaritmo(img1,c):
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
@@ -143,7 +165,6 @@ class Algoritmos ():
 		salidaImg = "static/operador_logaritmo100" + imagen
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
-
 	def operador_Root(img1,c):
 		imagen = img1
 		img  = cv2.imread(imagen,0)
@@ -167,7 +188,6 @@ class Algoritmos ():
 		salidaImg = "static/operador_Root50" + imagen
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
-
 	def operador_Raise_to_power(img1,c,r):
 		imagen = img1 
 		img  = cv2.imread(imagen,0)
@@ -223,7 +243,8 @@ class Operadores():
 		
 	def PageOperador(request):
 		tipo = request.POST['fase']
-
+		if(tipo == "Thresholding"):
+			return render(request,'Thresholding.html',{"labels":tipo})
 		if(tipo == "Outlier_C.Stretching"):
 			return render(request,'Outlier_Contrast_Stretching.html',{"labels":tipo})	
 		if(tipo == "Contrast_stretching"):
@@ -232,26 +253,31 @@ class Operadores():
 			return render(request,'Ecualizacion_Histograma.html',{"labels":tipo})
 		if(tipo == "O.Logaritmico"):
 			return render(request,'PageOperador.html',{"labels":tipo})
-
 		if(tipo == "O.Raiz"):
 			return render(request,'PageOperador.html',{"labels":tipo})
 		if(tipo == "O.Exponencial"):
 			return render(request,'Operador_Exponencial.html',{"labels":tipo})	
 		if(tipo == "O.RaiseToPower"):
 			return render(request,'RaiseToPower.html',{"labels":tipo})
-	
-	
-
-
+		if(tipo == "Cascada"):
+			print("Estoy aqui")
+			return render(request,'Cascada.html',{"labels":tipo})		
 
 	def ControladorOperador(request):
 
 		#id = request.POST['fase']
 		tipo = request.POST['Tipo']
 		myfile = request.FILES["file1"]
+		print(myfile)
 		fs = FileSystemStorage()
 		filename = fs.save(myfile.name, myfile)
 		file_name = fs.url(filename)
+		if(tipo == "Thresholding"):
+			min1 = request.POST['min']
+			max2 = request.POST['max']			
+			resultado =  Algoritmos.Thresholding(file_name,int(min1),int(max2))
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+
 		if(tipo == "Outlier_C.Stretching"):
 			a = request.POST['a']
 			b = request.POST['b']
@@ -293,9 +319,34 @@ class Operadores():
 			r = request.POST['r']
 			
 			resultado = Algoritmos.operador_Raise_to_power(file_name,float(c),float(r))
-			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )		
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+		if(tipo == "Cascada"):
+
+			a,b = 0 , 255 
+			Resultado1 =  Algoritmos.Contrast_Stretching(file_name,a,b)
+			Resultado2 = Algoritmos.ecualizacion_histograma(file_name)
+			c = 70 
+			Resultado3 = Algoritmos.operador_logaritmo(file_name,c)
+			c =20
+			Resultado4 = Algoritmos.operador_Root(file_name,c)
+			c,b = 20 , 1.01
+			Resultado5 = Algoritmos.operador_Exponencial(file_name,c,b)
+			c, r = 0.1 , 1.5
+			Resultado6 = Algoritmos.operador_Raise_to_power(file_name,c,r)
+
+
+
+
+			return render(request,'Resultado_Cascada.html',{"labels2":tipo,
+				"image":"/"+Resultado1,
+				"image2":"/"+Resultado2,
+				"image3":"/"+Resultado3,
+				"image4":"/"+Resultado4,
+				"image5":"/"+Resultado5,
+				"image6":"/"+Resultado6,
+				} )				
 			
-		return render(request,'ResulTOperador.html')
+		return render(request,'Home.html')
 
 
 

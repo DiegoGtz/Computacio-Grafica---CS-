@@ -44,6 +44,7 @@
 
 			<form action="{% url 'Home2:PageOperador' %}" method='post'>{% csrf_token %}
 			<select name="fase" class="custom-select"  id="">
+				<option value="Thresholding">Thresholding</option>
 				<option value="Outlier_C.Stretching">Outlier C.Stretching</option>
 				<option value="Contrast_stretching">Contrast stretching</option>
 				<option value="E.Histograma">Ecualizacion de Histograma</option>
@@ -51,7 +52,7 @@
 				<option value="O.Raiz">Operador Raiz</option>
 				<option value="O.Exponencial">Operador Exponencial</option>
 				<option value="O.RaiseToPower">Operador RaiseToPower</option>
-				<option value="O.RaiseToPower">Cascada</option>
+				<option value="Cascada">Cascada</option>
 			</select>	
 			<h2></h2>	
 			<button type="submit"   class="btn btn-secondary btn-lg">Iniciar</button>
