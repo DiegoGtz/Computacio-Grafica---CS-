@@ -20,7 +20,9 @@
  				<form action="{% url 'Home2:ControladorOperador' %}" method='post' enctype="multipart/form-data">{% csrf_token %}
  				<p class="section-description">Seleccione los parametros y la imagen</p>
 				<label for=""> C = </label>
-				<input type="text" id="" name="c">	
+				<input type="text" id="" name="c">
+				<label for=""> R = </label>
+				<input type="text" id="" name="r">		
 				<input type="hidden" id="" name="Tipo" value={{labels}} >	
         		<input type="file"  id="files" name="file1" />	
         		<br>

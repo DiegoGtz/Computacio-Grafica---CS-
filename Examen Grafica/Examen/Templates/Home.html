@@ -25,8 +25,8 @@
   		</div>
   		<nav id="nav-menu-container">
 			<ul class="nav-menu">
+
 				<li class="menu-active" ><a href=""> Inicio</a> </li>	
-	
 
 			</ul>
   		</nav>
@@ -41,7 +41,16 @@
 		<div class="hero-container">
 			<h1>Grafica</h1>
 			<h2></h2>
-			<a href="{% url 'Home2:PageOperador' %}"  class="btn-get-started">Iniciar</a>
+			<form action="{% url 'Home2:PageOperador' %}" method='post'>{% csrf_token %}
+			<select name="fase" id="">
+				<option value="O.Logaritmico">O.Logaritmico </option>
+				<option value="O.Raiz">O.Raiz</option>
+				<option value="O.Exponencial">O.Exponencial</option>
+				<option value="O.RaiseToPower">O.RaiseToPower</option>
+			</select>	
+			<h2></h2>	
+			<button type="submit"   class="btn btn-secondary btn-lg">Iniciar</button>
+			</form>
 		</div>	
 	</section>	
 {% endblock %}
