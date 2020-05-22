@@ -8,6 +8,7 @@ urlpatterns=[
 
 
 	path('Operador/',Operadores.PageOperador, name = 'PageOperador'),
+	path('Home/',Operadores.inicio, name = 'Inicio'),
 	path('Analizador2/',Operadores.ControladorOperador, name = 'ControladorOperador')
 
 

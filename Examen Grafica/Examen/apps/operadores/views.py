@@ -239,28 +239,29 @@ class Algoritmos ():
 
 
 class Operadores():
-
+	def inicio(request):
+		return render(request,'Home.html')
 		
 	def PageOperador(request):
 		tipo = request.POST['fase']
 		if(tipo == "Thresholding"):
 			return render(request,'Thresholding.html',{"labels":tipo})
-		if(tipo == "Outlier_C.Stretching"):
+		elif(tipo == "Outlier_C.Stretching"):
 			return render(request,'Outlier_Contrast_Stretching.html',{"labels":tipo})	
-		if(tipo == "Contrast_stretching"):
+		elif(tipo == "Contrast_stretching"):
 			return render(request,'Contrast_stretching.html',{"labels":tipo})		
-		if(tipo == "E.Histograma"):
+		elif(tipo == "E.Histograma"):
 			return render(request,'Ecualizacion_Histograma.html',{"labels":tipo})
-		if(tipo == "O.Logaritmico"):
+		elif(tipo == "O.Logaritmico"):
 			return render(request,'PageOperador.html',{"labels":tipo})
-		if(tipo == "O.Raiz"):
+		elif(tipo == "O.Raiz"):
 			return render(request,'PageOperador.html',{"labels":tipo})
-		if(tipo == "O.Exponencial"):
+		elif(tipo == "O.Exponencial"):
 			return render(request,'Operador_Exponencial.html',{"labels":tipo})	
-		if(tipo == "O.RaiseToPower"):
+		elif(tipo == "O.RaiseToPower"):
 			return render(request,'RaiseToPower.html',{"labels":tipo})
-		if(tipo == "Cascada"):
-			print("Estoy aqui")
+		elif(tipo == "Cascada"):
+
 			return render(request,'Cascada.html',{"labels":tipo})		
 
 	def ControladorOperador(request):
