@@ -237,6 +237,46 @@ class Algoritmos ():
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
 
+	def pixel_adition(imagen1,imagen2):
+		img1 = cv2.imread(imagen1)
+		img2 = cv2.imread(imagen2)
+		img1 = img1.astype(int)
+		#print(img1.dtype,' tipo')
+
+		#print(img1.shape,' :: shape')
+		#print(img1[0][0][2])
+		##print(img1[0][1][2])
+		#print(img1[0][2][2])
+		#print(img1[0][3][2])
+
+		#print(img2.shape,' :: shape')
+		#print(img2[0][0][2])
+		#print(img2[0][1][2])
+		#print(img2[0][2][2])
+		#print(img2[0][3][2])
+	
+		alto1,ancho1 = img1.shape[:2]
+		alto2,ancho2 = img2.shape[:2]
+		
+		#print(alto1,' ',ancho1)
+		#print(alto2,' ',ancho2)
+
+		#array = np.zeros((alto2,ancho2), dtype=int)
+
+		for i in range(alto2-1):
+			for j in range(ancho2-1):
+				img1[i][j] = img1[i][j]/2+img2[i][j]/2
+				img1[i][j] = img1[i][j]+15
+
+		#cv2.imshow('nueva.jpg', img1)
+		#cv2.waitKey(0)
+		print("Matriz",img1)
+		salidaImg = "static/Adition.jpg"
+		cv2.imwrite(salidaImg,img1)
+		return salidaImg
+
+
+
 
 class Operadores():
 	def inicio(request):
@@ -264,15 +304,24 @@ class Operadores():
 
 			return render(request,'Cascada.html',{"labels":tipo})		
 
+		elif(tipo == "Add"):
+
+			return render(request,'Addition.html',{"labels":tipo})	
 	def ControladorOperador(request):
 
 		#id = request.POST['fase']
 		tipo = request.POST['Tipo']
 		myfile = request.FILES["file1"]
-		print(myfile)
+		myfile2 = request.FILES["file2"]
+		print(myfile,myfile2)
 		fs = FileSystemStorage()
+		fs2 = FileSystemStorage()
 		filename = fs.save(myfile.name, myfile)
+		filename2 = fs2.save(myfile2.name, myfile2)
 		file_name = fs.url(filename)
+		file_name2 = fs2.url(filename2)
+
+		print(file_name,file_name2)
 		if(tipo == "Thresholding"):
 			min1 = request.POST['min']
 			max2 = request.POST['max']			
@@ -335,9 +384,6 @@ class Operadores():
 			c, r = 0.1 , 1.5
 			Resultado6 = Algoritmos.operador_Raise_to_power(file_name,c,r)
 
-
-
-
 			return render(request,'Resultado_Cascada.html',{"labels2":tipo,
 				"image":"/"+Resultado1,
 				"image2":"/"+Resultado2,
@@ -345,7 +391,14 @@ class Operadores():
 				"image4":"/"+Resultado4,
 				"image5":"/"+Resultado5,
 				"image6":"/"+Resultado6,
-				} )				
+				} )		
+
+
+		if (tipo == "Add"):
+
+			resultado = Algoritmos.pixel_adition(file_name,file_name2)
+			print("asdas",resultado)
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
 			
 		return render(request,'Home.html')
 
