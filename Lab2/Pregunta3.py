@@ -52,7 +52,7 @@ def Outlier_Contrast_Stretching(img, width, height, a,b, Low, High):
 			if(_resultado < 0 ):
 				_resultado = 0
 	_toNP = np.array(_matrizOUT)
-	cv2.imwrite("Outlier_Contrast_Stretching3.jpg",_toNP)
+	cv2.imwrite("Outlier_Contrast_Stretching7.jpg",_toNP)
 
 if __name__ == "__main__":
     
@@ -68,9 +68,9 @@ if __name__ == "__main__":
 
 
 	
-	Histograma('Contrast_Stretching.jpg')
+	#Histograma('Contrast_Stretching.jpg')
 
-	Add_Outliers(img, 0 ,0 ,9)
+	#Add_Outliers(img, 0 ,0 ,9)
 
 	Constrast = 'Add_Outliers.jpg'
 

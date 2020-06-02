@@ -63,7 +63,7 @@ def  Contrast_Stretching(img,width, height ,a , b ):
 if __name__ == "__main__":
     
 	#Obtenemos el Histograma de la imagen
-	imagen = 'contr2.jpg'
+	imagen = 'prueba_salida_sub.jpg'
 	#Histograma(imagen)
 
 	#Stretching 
