@@ -241,36 +241,35 @@ class Algoritmos ():
 		img1 = cv2.imread(imagen1)
 		img2 = cv2.imread(imagen2)
 		img1 = img1.astype(int)
-		#print(img1.dtype,' tipo')
+		img2 = img2.astype(int)
 
-		#print(img1.shape,' :: shape')
-		#print(img1[0][0][2])
-		##print(img1[0][1][2])
-		#print(img1[0][2][2])
-		#print(img1[0][3][2])
-
-		#print(img2.shape,' :: shape')
-		#print(img2[0][0][2])
-		#print(img2[0][1][2])
-		#print(img2[0][2][2])
-		#print(img2[0][3][2])
-	
 		alto1,ancho1 = img1.shape[:2]
 		alto2,ancho2 = img2.shape[:2]
 		
-		#print(alto1,' ',ancho1)
-		#print(alto2,' ',ancho2)
+		print(alto1,' ',ancho1)
+		print(alto2,' ',ancho2)
+		alto = 0
+		ancho = 0
 
-		#array = np.zeros((alto2,ancho2), dtype=int)
+		if alto1<alto2:
+			alto=alto1
+		else:
+			alto=alto2
+		if ancho1<ancho2:
+			ancho=ancho1
+		else:
+			ancho=ancho2
 
-		for i in range(alto2-1):
-			for j in range(ancho2-1):
-				img1[i][j] = img1[i][j]/2+img2[i][j]/2
-				img1[i][j] = img1[i][j]+15
+		for i in range(alto):
+			for j in range(ancho):
+				img1[i][j][0] = img1[i][j][0]/2+img2[i][j][0]/2
+				img1[i][j][1] = img1[i][j][1]/2+img2[i][j][1]/2
+				img1[i][j][2] = img1[i][j][2]/2+img2[i][j][2]/2
 
-		#cv2.imshow('nueva.jpg', img1)
-		#cv2.waitKey(0)
-		print("Matriz",img1)
+				img1[i][j][0] = img1[i][j][0] + 20
+				img1[i][j][1] = img1[i][j][1] + 20
+				img1[i][j][2] = img1[i][j][2] + 20
+		
 		salidaImg = "static/Adition.jpg"
 		cv2.imwrite(salidaImg,img1)
 		return salidaImg
