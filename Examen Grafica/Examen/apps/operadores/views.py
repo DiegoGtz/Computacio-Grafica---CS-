@@ -290,7 +290,10 @@ class Algoritmos ():
 				img1[i][j]=img1[i][j]+105
 		salidaImg1 = "static/prueba_salida.png"
 		cv2.imwrite(salidaImg1,img1)
-		img = cv2.imread('static/prueba_salida.png',0)
+		
+		return salidaImg1
+
+	'''	img = cv2.imread('static/prueba_salida.png',0)
 		alto,ancho = img.shape
 
 		img_out=img
@@ -304,7 +307,7 @@ class Algoritmos ():
 		salidaImg = "static/question_3_sol.png"
 		cv2.imwrite(salidaImg, img_out)
 
-		return salidaImg
+		return salidaImg1'''
 class Operadores():
 	def inicio(request):
 		return render(request,'Home.html')
