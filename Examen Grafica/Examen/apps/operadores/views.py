@@ -274,9 +274,37 @@ class Algoritmos ():
 		cv2.imwrite(salidaImg,img1)
 		return salidaImg
 
+	def pixel_sustraction(imagen1,imagen2):
+		img1 = cv2.imread(imagen1,0)
+		img2 = cv2.imread(imagen2,0)
+		img1 = img1.astype(int)
+		img2 = img2.astype(int)
+		#print(img1.dtype,' tipo')
 
+		alto1,ancho1 = img1.shape
+		alto2,ancho2 = img2.shape
 
+		for i in range(alto1):
+			for j in range(ancho1):
+				img1[i][j] = abs(img2[i][j]-img1[i][j])
+				img1[i][j]=img1[i][j]+105
+		salidaImg1 = "static/prueba_salida.png"
+		cv2.imwrite(salidaImg1,img1)
+		img = cv2.imread('static/prueba_salida.png',0)
+		alto,ancho = img.shape
 
+		img_out=img
+
+		for i in range(alto):
+		    for j in range(ancho):
+		        if (70<img[i][j] and img[i][j]<130):
+		            img_out[i,j]=255
+		        else:
+		            img_out[i,j]=0
+		salidaImg = "static/question_3_sol.png"
+		cv2.imwrite(salidaImg, img_out)
+
+		return salidaImg
 class Operadores():
 	def inicio(request):
 		return render(request,'Home.html')
@@ -306,6 +334,8 @@ class Operadores():
 		elif(tipo == "Add"):
 
 			return render(request,'Addition.html',{"labels":tipo})	
+		elif(tipo == "Subtraction"):
+			return render(request,'Subtraction.html',{"labels":tipo})	
 	def ControladorOperador(request):
 
 		#id = request.POST['fase']
@@ -396,7 +426,12 @@ class Operadores():
 		if (tipo == "Add"):
 
 			resultado = Algoritmos.pixel_adition(file_name,file_name2)
-			print("asdas",resultado)
+		
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+		if (tipo == "Subtraction"):
+
+			resultado = Algoritmos.pixel_sustraction(file_name,file_name2)
+			
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
 			
 		return render(request,'Home.html')
