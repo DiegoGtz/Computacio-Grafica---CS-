@@ -350,7 +350,10 @@ class Algoritmos ():
 		return salidaImg
 
 	def pixel_division(imagen1,imagen2):
-		print (imagen1,imagen2)
+
+
+
+
 		img1 = cv2.imread(imagen1,0)
 		img2 = cv2.imread(imagen2,0)
 		alto,ancho = img1.shape
@@ -359,22 +362,27 @@ class Algoritmos ():
 			for j in range(ancho):
 				img1[i][j] = (img1[i][j]/img2[i][j])*30
 
-		newMin=0
-		newMax=255
-		mini=0
-		maxi=30
+
+		histr = cv2.calcHist([img1],[0],None,[256],[0,256])
+		histr=histr.astype(int)
+
+		a=0
+		b=255
+		c=0
+		d=0
+		for i in range(len(histr)):
+			if histr[i]!=0:
+				c=i
+				break
+		for i in range(len(histr)):
+			if histr[len(histr)-1-i]!=0:
+				d=len(histr)-1-i
+				break
+		img_out=img1
+
 		for i in range(alto):
 			for j in range(ancho):
-				img1[i][j] = (img1[i][j]-mini)*((newMax-newMin)/(maxi-mini))+newMin
-
-		img_out=img1
-		for i in range(alto):
-		    for j in range(ancho):
-		        #if (img[i][j]<130):
-		        if ( 50 < img1[i,j] and img1[i,j] < 215):
-		            img_out[i,j]=255
-		        else:
-		            img_out[i,j]=0
+				img_out[i][j]= (img_out[i][j]-c)*((b-a)/(d-c))+a
 
 
 		salidaImg = "static/Div" + imagen1 + imagen2
