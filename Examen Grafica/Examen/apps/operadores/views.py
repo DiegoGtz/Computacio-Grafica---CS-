@@ -94,11 +94,7 @@ class Algoritmos ():
 				if(_token > max):
 					max = _token
 		c,d = min, max
-		#Aplicando la Formula 
-		#(F[x,y] - c)*(b-a)/(d-c) + a
-		# (b-a) /(d-c)
 		_div = (b - a )/ (d - c ) 
-		#Aplicando la formula en cada F[x,y]
 		for y in range(0, _h):
 			_matrizOUT.append([])
 			for x in range(0,_w):
@@ -279,8 +275,6 @@ class Algoritmos ():
 		img2 = cv2.imread(imagen2,0)
 		img1 = img1.astype(int)
 		img2 = img2.astype(int)
-		#print(img1.dtype,' tipo')
-
 		alto1,ancho1 = img1.shape
 		alto2,ancho2 = img2.shape
 
@@ -290,24 +284,7 @@ class Algoritmos ():
 				img1[i][j]=img1[i][j]+105
 		salidaImg1 = "static/prueba_salida.png"
 		cv2.imwrite(salidaImg1,img1)
-		
 		return salidaImg1
-
-	'''	img = cv2.imread('static/prueba_salida.png',0)
-		alto,ancho = img.shape
-
-		img_out=img
-
-		for i in range(alto):
-		    for j in range(ancho):
-		        if (70<img[i][j] and img[i][j]<130):
-		            img_out[i,j]=255
-		        else:
-		            img_out[i,j]=0
-		salidaImg = "static/question_3_sol.png"
-		cv2.imwrite(salidaImg, img_out)
-
-		return salidaImg1'''
 
 	def multiplication(imagen1,c):
 		img1 = cv2.imread(imagen1)
@@ -315,8 +292,6 @@ class Algoritmos ():
 		img1 = img1.astype(int)
 
 		alto1,ancho1 = img1.shape[:2]
-		
-		#print(alto1,' ',ancho1)
 		
 		for i in range(alto1):
 			for j in range(ancho1):
@@ -363,9 +338,6 @@ class Algoritmos ():
 		print (imagen1,imagen2)
 		img1 = cv2.imread(imagen1,0)
 		img2 = cv2.imread(imagen2,0)
-		#img1 = img1.astype(int)
-		#img2 = img2.astype(int)
-
 		alto,ancho = img1.shape
 
 		for i in range(alto):
@@ -393,39 +365,48 @@ class Algoritmos ():
 		salidaImg = "static/Div" + imagen1 + imagen2
 		cv2.imwrite(salidaImg,img_out)
 		return salidaImg
-
-	'''def scaling(imagen):
-		img = cv2.imread(imagen,0)
-		img = img.astype(int)
-		alto,ancho = img.shape
-
-		newMin=0
-		newMax=255
-		mini=0
-		maxi=30
-
+	def Thresholding1(img1, alto, ancho ):
+		img_out=img1
 		for i in range(alto):
 			for j in range(ancho):
-				img[i][j] = (img[i][j]-mini)*((newMax-newMin)/(maxi-mini))+newMin
+			    if ( 0< img1[i,j] and img1[i,j] < 150):
+			        img_out[i,j]=255
+			    else:
+			        img_out[i,j]=0
+		return img_out
+	def Ope_Logicos(imagen1,imagen2,operador):
+		img1 = cv2.imread(imagen1,0)
+		img2 = cv2.imread(imagen2,0)
+		img1 = img1.astype(int)
+		img2 = img2.astype(int)
+		alto1,ancho1 = img1.shape
+		alto2,ancho2 = img2.shape
 
-		salidaImg = "static/Sca" + imagen
-		cv2.imwrite(salidaImg,img)
+		print (alto1, alto2)
+		############################################
+		T_img1 = Algoritmos.Thresholding1(img1,alto1,ancho1)
+		T_img2 = Algoritmos.Thresholding1(img2,alto2,ancho2)
+		  #cv2.imwrite('t_img1.png',T_img1)
+		  #cv2.imwrite('t_img2.png',T_img2)
+		###########################################
+		for i in range(alto1):
+		  for j in range(ancho1):
 
-	def Thresholding(imagen):
-		img = cv2.imread(imagen,0)
-		alto,ancho = img.shape
+		  	if(operador == "AND"):
+		  		token = np.bitwise_and(T_img1[i][j],T_img2[i][j])
+		  	elif(operador == "OR"):
+		  		token = np.bitwise_or(T_img1[i][j],T_img2[i][j])
+		  	elif(operador =="XOR"):
+		  		token = np.bitwise_xor(T_img1[i][j],T_img2[i][j])
+		  	if(token < 0):
+		  		token = 0
+		  	elif(token > 255):
+		  		token = 255
+		  	img1[i][j] = token
 
-		img_out=img
-		for i in range(alto):
-		    for j in range(ancho):
-		        #if (img[i][j]<130):
-		        if ( 50 < img[i,j] and img[i,j] < 215):
-		            img_out[i,j]=0
-		        else:
-		            img_out[i,j]=255
-		imagen = 
-		cv2.imwrite('thress.jpg',img_out)'''
-
+		salidaImg = "static/MultiplicacionOUT" + imagen1 + imagen2     
+		cv2.imwrite(salidaImg,img1)
+		return salidaImg
 
 class Operadores():
 	def inicio(request):
@@ -454,7 +435,6 @@ class Operadores():
 			return render(request,'Cascada.html',{"labels":tipo})		
 
 		elif(tipo == "Add"):
-
 			return render(request,'Addition.html',{"labels":tipo})	
 		elif(tipo == "Subtraction"):
 			return render(request,'Subtraction.html',{"labels":tipo})	
@@ -465,19 +445,26 @@ class Operadores():
 			return render(request,'Blending.html',{"labels":tipo})
 		elif(tipo == "Division" ):
 			return render(request,'Division.html',{"labels":tipo})
+		elif(tipo == "AND" ):
+			return render(request,'OperadoresLogicos.html',{"labels":tipo})
+		elif(tipo == "OR" ):
+			return render(request,'OperadoresLogicos.html',{"labels":tipo})
+		elif(tipo == "XOR" ):
+			return render(request,'OperadoresLogicos.html',{"labels":tipo})
+
 	def ControladorOperador(request):
 
 		#id = request.POST['fase']
 		tipo = request.POST['Tipo']
 		myfile = request.FILES["file1"]
-		myfile2 = request.FILES["file2"]
+		#myfile2 = request.FILES["file2"]
 		#print(myfile,myfile2)
 		fs = FileSystemStorage()
-		fs2 = FileSystemStorage()
+		#fs2 = FileSystemStorage()
 		filename = fs.save(myfile.name, myfile)
-		filename2 = fs2.save(myfile2.name, myfile2)
+		#filename2 = fs2.save(myfile2.name, myfile2)
 		file_name = fs.url(filename)
-		file_name2 = fs2.url(filename2)
+		#file_name2 = fs2.url(filename2)
 
 		#print(file_name,file_name2)
 		if(tipo == "Thresholding"):
@@ -554,11 +541,18 @@ class Operadores():
 
 		if (tipo == "Add"):
 			#return render(request,'Home.html')
+			myfile2 = request.FILES["file2"]
+			fs2 = FileSystemStorage()
+			filename2 = fs2.save(myfile2.name, myfile2)
+			file_name2 = fs2.url(filename2)
 			resultado = Algoritmos.pixel_adition(file_name,file_name2)
 		
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
 		if (tipo == "Subtraction"):
-
+			myfile2 = request.FILES["file2"]
+			fs2 = FileSystemStorage()
+			filename2 = fs2.save(myfile2.name, myfile2)
+			file_name2 = fs2.url(filename2)
 			resultado = Algoritmos.pixel_sustraction(file_name,file_name2)
 			
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
@@ -570,14 +564,53 @@ class Operadores():
 		if (tipo == "Blending"):
 			#return render(request,'Home.html')
 			x = request.POST['x']
-
+			myfile2 = request.FILES["file2"]
+			fs2 = FileSystemStorage()
+			filename2 = fs2.save(myfile2.name, myfile2)
+			file_name2 = fs2.url(filename2)
 			resultado = Algoritmos.blending(file_name,file_name2,float(x))
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
 		if (tipo == "Division"):
 			#return render(request,'Home.html')
+			myfile2 = request.FILES["file2"]
+			fs2 = FileSystemStorage()
+			filename2 = fs2.save(myfile2.name, myfile2)
+			file_name2 = fs2.url(filename2)
 			resultado = Algoritmos.pixel_division(file_name,file_name2)
 		
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+
+		if (tipo == "AND"):
+			#return render(request,'Home.html')
+			myfile2 = request.FILES["file2"]
+			fs2 = FileSystemStorage()
+			filename2 = fs2.save(myfile2.name, myfile2)
+			file_name2 = fs2.url(filename2)
+
+			resultado = Algoritmos.Ope_Logicos(file_name,file_name2,tipo)
+		
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+		if (tipo == "OR"):
+			#return render(request,'Home.html')
+			myfile2 = request.FILES["file2"]
+			fs2 = FileSystemStorage()
+			filename2 = fs2.save(myfile2.name, myfile2)
+			file_name2 = fs2.url(filename2)
+			resultado = Algoritmos.Ope_Logicos(file_name,file_name2,tipo)
+		
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+		if (tipo == "XOR"):
+			#return render(request,'Home.html')
+			myfile2 = request.FILES["file2"]
+			fs2 = FileSystemStorage()
+			filename2 = fs2.save(myfile2.name, myfile2)
+			file_name2 = fs2.url(filename2)
+			resultado = Algoritmos.Ope_Logicos(file_name,file_name2,tipo)
+		
+			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+
+
+
 		return render(request,'Home.html')
 
 
