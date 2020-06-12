@@ -277,13 +277,28 @@ class Algoritmos ():
 		img2 = img2.astype(int)
 		alto1,ancho1 = img1.shape
 		alto2,ancho2 = img2.shape
-
+		if alto1<alto2:
+			alto=alto1
+		else:
+			alto=alto2
+		if ancho1<ancho2:
+			ancho=ancho1
+		else:
+			ancho=ancho2
 		for i in range(alto1):
 			for j in range(ancho1):
 				img1[i][j] = abs(img2[i][j]-img1[i][j])
 				img1[i][j]=img1[i][j]+105
-		salidaImg1 = "static/prueba_salida.png"
-		cv2.imwrite(salidaImg1,img1)
+		img_out=img1
+		for i in range(alto):
+		    for j in range(ancho):
+		        if ( 70 < img1[i,j] and img1[i,j] < 130):
+		            img_out[i,j]=255
+		        else:
+		            img_out[i,j]=0
+
+		salidaImg1 = "static/prueba_salida.png" +imagen1 
+		cv2.imwrite(salidaImg1,img_out)
 		return salidaImg1
 
 	def multiplication(imagen1,c):
@@ -357,9 +372,9 @@ class Algoritmos ():
 		    for j in range(ancho):
 		        #if (img[i][j]<130):
 		        if ( 50 < img1[i,j] and img1[i,j] < 215):
-		            img_out[i,j]=0
-		        else:
 		            img_out[i,j]=255
+		        else:
+		            img_out[i,j]=0
 
 
 		salidaImg = "static/Div" + imagen1 + imagen2
@@ -404,7 +419,7 @@ class Algoritmos ():
 		  		token = 255
 		  	img1[i][j] = token
 
-		salidaImg = "static/MultiplicacionOUT" + imagen1 + imagen2     
+		salidaImg = "static/MultiplicacionOUT" + imagen1  
 		cv2.imwrite(salidaImg,img1)
 		return salidaImg
 
@@ -431,14 +446,11 @@ class Operadores():
 		elif(tipo == "O.RaiseToPower"):
 			return render(request,'RaiseToPower.html',{"labels":tipo})
 		elif(tipo == "Cascada"):
-
 			return render(request,'Cascada.html',{"labels":tipo})		
-
 		elif(tipo == "Add"):
 			return render(request,'Addition.html',{"labels":tipo})	
 		elif(tipo == "Subtraction"):
 			return render(request,'Subtraction.html',{"labels":tipo})	
-
 		elif(tipo == "Multiplicacion" ):
 			return render(request,'Multiplicacion.html',{"labels":tipo})
 		elif(tipo == "Blending" ):
@@ -608,8 +620,6 @@ class Operadores():
 			resultado = Algoritmos.Ope_Logicos(file_name,file_name2,tipo)
 		
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
-
-
 
 		return render(request,'Home.html')
 
