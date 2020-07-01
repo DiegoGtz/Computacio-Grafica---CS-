@@ -34,9 +34,9 @@ class Algoritmos ():
 				g = img.item(y, x, 1)
 				r = img.item(y, x, 2)
 				if (b > min and b <max)  and (g > min and g <max ) and (r > min and r <max):
-					matriz[y].append(255)#Blanco
+					matriz[y].append(0)#Blanco
 				else:
-					matriz[y].append(0)#Negro
+					matriz[y].append(255)#Negro
 		_toNP = np.array(matriz)
 		salidaImg = "static/Thresholding" + imagen
 		cv2.imwrite(salidaImg,_toNP)		
@@ -232,7 +232,15 @@ class Algoritmos ():
 		salidaImg = "static/operador_Exponencial"+ str(c) +'_'+ str(b)+ imagen
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
-
+	def Thresholding1(img1, alto, ancho ):
+		img_out=img1
+		for i in range(alto):
+			for j in range(ancho):
+			    if ( 0< img1[i,j] and img1[i,j] < 150):
+			        img_out[i,j]=255
+			    else:
+			        img_out[i,j]=0
+		return img_out
 	def pixel_adition(imagen1,imagen2):
 		img1 = cv2.imread(imagen1)
 		img2 = cv2.imread(imagen2)
@@ -351,9 +359,6 @@ class Algoritmos ():
 
 	def pixel_division(imagen1,imagen2):
 
-
-
-
 		img1 = cv2.imread(imagen1,0)
 		img2 = cv2.imread(imagen2,0)
 		alto,ancho = img1.shape
@@ -388,15 +393,7 @@ class Algoritmos ():
 		salidaImg = "static/Div" + imagen1 + imagen2
 		cv2.imwrite(salidaImg,img_out)
 		return salidaImg
-	def Thresholding1(img1, alto, ancho ):
-		img_out=img1
-		for i in range(alto):
-			for j in range(ancho):
-			    if ( 0< img1[i,j] and img1[i,j] < 150):
-			        img_out[i,j]=255
-			    else:
-			        img_out[i,j]=0
-		return img_out
+
 	def Ope_Logicos(imagen1,imagen2,operador):
 		img1 = cv2.imread(imagen1,0)
 		img2 = cv2.imread(imagen2,0)
