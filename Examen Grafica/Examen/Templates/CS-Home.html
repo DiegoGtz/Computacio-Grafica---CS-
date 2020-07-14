@@ -1,0 +1,159 @@
+{% extends 'Home.html' %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+
+{%block content%}
+{%endblock%}
+{% block services %}
+
+<script >
+function init(){
+    //bind events
+    $(".view-select input:file").bind("change",function(e){
+    	console.log("66");
+        const files = e.target.files;
+      	console.log("123");
+      	console.log(files)
+
+    });
+
+
+     canvas = $("canvas")[0];
+     console.log(canvas);
+	/* canvas.onmousedown = canvasClick;
+	 canvas.onmouseup = stopDragging;
+	 canvas.onmouseout = stopDragging;
+	 canvas.onmousemove = dragCircle;*/
+}
+
+function canvasClick(e){
+  var x = e.pageX - e.target.offsetLeft;
+  var y = e.pageY - e.target.offsetTop;
+  
+  for(var i=0; i<points.length; i++) {
+    
+    if(Math.pow(points[i].x - x , 2) + Math.pow(points[i].y - y , 2) < 100 ){
+      points[i].selected = true;
+      console.log(points[i]);
+    } else {
+      if(points[i].selected) points[i].selected = false;
+    }
+  }
+}
+function dragCircle(e){
+//   console.log(points);
+  for(var i=0; i<points.length; i++) if(points[i].selected) {
+    points[i].x =e.pageX - e.target.offsetLeft;
+    points[i].y = e.pageY - e.target.offsetTop;
+    console.log("xxxx1x");
+  }
+  draw();
+}
+function stopDragging(e){
+  for(var i=0; i<points.length; i++) {
+    points[i].selected = false;
+  }
+}
+function draw(){
+  canvas = $("canvas")[0];
+  context = canvas.getContext("2d");
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(img,0,0,img.width,img.height);
+  drawPoints(points);
+}
+
+window.process = async (file)=>{ 
+	console.log("Entre en proces")
+    let ctx = $("canvas")[0].getContext('2d');
+    const img = await loadImage(file);
+    $("canvas")[0].width = img.width;
+    $("canvas")[0].height = img.height;
+    window.img = img;
+    ctx.drawImage(img,0,0,img.width,img.height);
+	console.log("Entre en proces2")
+    let image = cv.imread($("canvas")[0]);
+    //BAD IDEA BEGIN
+    window.image = image;
+    //BAD IDEA END
+    let edges = new cv.Mat();
+    cv.Canny(image,edges,100,200);
+
+   // cv.imshow($("canvas")[0],edges);
+    let contours = new cv.MatVector();
+    let hierarchy = new cv.Mat();
+
+    cv.findContours(edges,contours,hierarchy,cv.RETR_LIST,cv.CHAIN_APPROX_SIMPLE);
+    
+    let cnts = []
+    for(let i=0;i<contours.size();i++){
+        const tmp = contours.get(i);
+        const peri = cv.arcLength(tmp,true);
+        let approx = new cv.Mat();
+        
+        let result = {
+            area:cv.contourArea(tmp),
+            points:[]
+        };
+
+        cv.approxPolyDP(tmp,approx,0.02*peri,true);
+        const pointsData = approx.data32S;
+        for(let j=0;j<pointsData.length/2;j++)
+            result.points.push({x:pointsData[2*j],y:pointsData[2*j+1]});
+        
+        if(result.points.length===4) cnts.push(result);
+        
+    }
+    cnts.sort((a,b)=>b.area-a.area);
+
+    console.log(cnts);
+    window.points = cnts[0].points;
+    console.log("asdsa",cnts[0].points);
+    drawPoints(cnts[0].points);
+
+
+}
+</script>
+    <!--Contenedor Para poder Cargar Imagenes-->
+    <section id="services">
+      <div class="container wow fadeIn">
+      	<br>
+      	<br>
+      	<div class="section-header">
+          	<h3 class="section-title">Analizador de imagen {{labels}}</h3>
+          	<br>
+          	<p class="section-description">Ingrese la imagen que desea Analizar</p>
+  		 </div>
+		<div class="box">
+			<h4 class="title"><i class="fa fa-camera"></i>&nbsp Add Image</h4>
+			<div class="drag-drop">
+				<div class="view-select">
+ 				<form action="{% url 'Home2:ControladorOperador' %}" method='post' enctype="multipart/form-data">{% csrf_token %}
+ 				<p class="section-description">Seleccione los parametros y la imagen</p>
+					
+			
+
+				<input type="file" name="img" accept="image/*"  multiple>
+
+	
+				<script >
+				
+				init()
+			
+
+				
+				</script>
+
+
+
+       		
+			  </div>
+			  <br>
+			 <button type="submit" class="btn btn-outline-secondary">Analyze</button>
+			  </form>
+		</div>
+      </div>
+
+    </section>
+
+{% endblock %}
+{% block portafolio %}
+{% endblock %}
