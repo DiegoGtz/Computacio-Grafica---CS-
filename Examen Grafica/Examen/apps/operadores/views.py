@@ -228,13 +228,13 @@ class Algoritmos ():
 		cv2.imwrite(salidaImg,Result)
 		return salidaImg
 	def Thresholding1(img1, alto, ancho ):
-		img_out=img1
+		img_out=img1.copy()
 		for i in range(alto):
 			for j in range(ancho):
-			    if ( 0< img1[i,j] and img1[i,j] < 150):
-			        img_out[i,j]=255
-			    else:
+			    if (img1[i,j] < 160):
 			        img_out[i,j]=0
+			    else:
+			        img_out[i,j]=255
 		return img_out
 	def pixel_adition(imagen1,imagen2):
 		img1 = cv2.imread(imagen1)
@@ -422,25 +422,28 @@ class Algoritmos ():
 #Funciones CamScam -------------------------------------------------------
 
 	def warPerspective(img,M,new_img):
-		img_out = np.zeros([new_img[1],new_img[0],3],dtype = np.uint32)
+		img_out = np.zeros([new_img[1],new_img[0],3],dtype = np.uint32) 
 		row,columns = (new_img[0],new_img[1])
+		
 		A= np.array(M,dtype = np.float64)
 		B= np.array(M[:,2:],dtype = np.float64)
+		#print("B ->>>: \n",B)
 		for u in range(0,row):
 			for v in range(0,columns): 
 				Y =  np.array([[u], [v],[1]], dtype=np.float64)
-				E = cv2.solve(M,Y)[1]
+				E = cv2.solve(M,Y)[1]	
 				_x = (E[0,0])
 				_y = (E[1,0])
 				_z = (E[2,0])
-				img_out[v,u] = img[int(_y//_z),int(_x//_z)]
+			#	if(int(_y//_z) < 504 and int(_x//_z) < 378 ):
+				img_out[v,u] = img[int(_y/_z),int(_x/_z)]
 		return np.uint8(img_out)
 	def get_M(X,M):
 		c = 0 
 		for i in range(3):
 			for j in range(3):
 				if (c !=8  ):
-					M[i][j] = X[c][0]
+					M[i][j] = X[c][0]	
 					c = c+1
 		M[2][2]= 1
 		return M
@@ -486,11 +489,12 @@ class Algoritmos ():
 		pts1 = np.float32([tl,tr,br,bl])
 		pts2 = np.float32(dst)
 		M2 = Algoritmos.getPerspectiveTransform(pts1,pts2)
-		dst2 = Algoritmos.warPerspective(img,M2,(maxWidth,maxHeight))
+		dst2 = cv2.warpPerspective(img,M2,(maxWidth,maxHeight))
+		#dst2 = Algoritmos.warPerspective(img,M2,(maxWidth,maxHeight))
 
-		salidaImg = "static/getPerspectiveTransform" + img1 
-		cv2.imwrite(salidaImg,dst2)
-		return salidaImg
+		mm = Algoritmos.filtro(dst2,img1)
+
+		return mm
 	def getNumber(strg):
 
 		num = []
@@ -505,6 +509,189 @@ class Algoritmos ():
 		num.append(int(str1))
 		return num
 
+
+#Procesaso de imagen Contrast_Stretching_
+	def ecualizacion_histograma1(img1):
+		imagen = img1 
+		img  = cv2.imread(imagen,0)
+		width, height = img.shape[:2]
+		_w 			= width
+		_h 			= height	
+		_matriz 	= np.array(img)
+		_matrizOUT 	= []
+		_n	= [] 
+		_pix = width*height
+		_L = 256
+		_S = dict()
+		for i in range(0,_L):
+			_n.append(0);
+		for y in range(0, _w):
+			for x in range(0,_h):
+				_token = _matriz[y][x]
+				_n[_token] = _n[_token] + 1 
+		_tmp3 = 0
+		for n in range(0,_L):
+			_tmp = float(_n[n])
+			_tmp2 = float(_pix)
+			_tmp3 = _tmp3 + (_tmp/_tmp2)		
+			_res = int(_tmp3*(_L-1))
+			_S[n] = _res
+		for y in range(0, _w):
+			_matrizOUT.append([])
+			for x in range(0,_h):
+				_token2 = _matriz[y][x]
+				newColor = _S[_token2]
+				_matrizOUT[y].append(newColor)
+		Result = np.array(_matrizOUT)
+		return Result
+
+
+	def Scala_Gris(imagen):
+		img = cv2.imread(imagen)	
+		alto,ancho,ch = img.shape
+		F = []
+		for k in range(alto):
+			C = [255]*ancho
+			F.append(C)
+
+		F = np.array(F)
+
+		for i in range(alto):
+			for j in range(ancho):
+				if img[i][j][0]!=255:
+					F[i][j] = img[i][j][0]/3+img[i][j][1]/3+img[i][j][2]/3
+
+		#cv2.imwrite('scala_gris.png',F)
+		return F
+
+	def Thresholding(imagen):
+		img = cv2.imread(imagen,0)	
+		alto,ancho = img.shape
+
+		for i in range(alto):
+		    for j in range(ancho):
+		        if (img[i][j]<160):
+		            img[i,j]=0
+		        else:
+		            img[i,j]=255
+		return img
+
+	def Separar_capas(img,k):
+		alto,ancho,ch = img.shape
+		img_new=[]
+		for i in range(alto):
+			V=[]
+			for j in range(ancho):
+				V.append(img[i][j][k])
+			img_new.append(V)
+
+		img_new = np.array(img_new)
+		return img_new
+
+	def Delete_fondo(img,imagen2):
+		
+		img2 = cv2.imread(imagen2,0)
+
+		alto,ancho = img2.shape
+
+		for i in range(alto):
+			for j in range(ancho):
+				if(img2[i][j]==255):
+					img[i][j]=255
+
+		return img
+	def Contrast_Stretching_2(img,nom):
+		alto,ancho = img.shape
+		histr = cv2.calcHist([img],[0],None,[256],[0,256])
+		histr=histr.astype(int)
+		a=0
+		b=255
+		c=0
+		d=0
+		for i in range(len(histr)):
+			if histr[i]!=0:
+				c=i
+				break
+		for i in range(len(histr)):
+			if histr[len(histr)-1-i]!=0:
+				d=len(histr)-1-i
+				break
+		for i in range(alto):
+			for j in range(ancho):
+				img[i][j]= (img[i][j]-c)*((b-a)/(d-c))+a
+
+		img_out = img.copy()
+		im2  = Algoritmos.Thresholding1(img,alto,ancho)
+		thres = "TresspRubea1.png"
+		cv2.imwrite(thres,im2)
+		img3 = Algoritmos.Delete_fondo(img,thres)
+
+		return img3,img_out
+	def Unir_capas(img1,img2,img3):
+		alto,ancho = img1.shape
+		C =[]
+		for i in range(alto):
+			V = []
+			for j in range(ancho):
+				U = []
+				U.append(img1[i][j])
+				U.append(img2[i][j])
+				U.append(img3[i][j])
+				V.append(U)
+			C.append(V)
+		C =np.array(C)
+		return C
+	def filtro(img1,img2):
+		img  = img1
+		capa1 = Algoritmos.Separar_capas(img,0)
+		capa2 = Algoritmos.Separar_capas(img,1)
+		capa3 = Algoritmos.Separar_capas(img,2)
+		#histograma_C(capa1)
+		#histograma_C(capa2)
+		#histograma_C(capa3)
+		capa1,c1 = Algoritmos.Contrast_Stretching_2(capa1,"one")
+		capa2,c2 = Algoritmos.Contrast_Stretching_2(capa2,"two")
+		capa3,c3 = Algoritmos.Contrast_Stretching_2(capa3,"three")
+		C = Algoritmos.Unir_capas(capa1,capa2,capa3)
+		C1 = Algoritmos.Unir_capas(c1,c2,c3)
+
+		salidaOriginal = "static/FiltroOrgi" + img2	
+		salidaImg = "static/Filtro" + img2
+		salidaImg1 = "Filtro" + img2
+		cv2.imwrite(salidaImg1,C1)
+		cv2.imwrite(salidaImg,C)
+		cv2.imwrite(salidaOriginal,C1)
+		#print(salidaImg)
+		#salidaImg2 = "C:/Users/PCO/Desktop/Git-Grafica/Computacio-Grafica---CS-/Examen Grafica/Examen/" + salidaImg
+		#salidaImg2 = img2
+		#print(salidaImg1)
+		##Binarizada 
+		Thre1  = Algoritmos.Thresholding(salidaImg1)
+		
+		#salidaFiltro1 = "static/Filtro1" +img2
+		salidaFiltro11 = "Filtro1" +img2
+		#cv2.imwrite(salidaFiltro1,Thre1)
+		cv2.imwrite(salidaFiltro11,Thre1)
+
+		Equ_Hiss = Algoritmos.ecualizacion_histograma1(salidaFiltro11)
+		salidaFiltroEq = "static/Filtro1" +img2
+		cv2.imwrite(salidaFiltroEq,Equ_Hiss)
+
+		#Escala de grises 
+		Esc_Gri = Algoritmos.Scala_Gris(salidaImg1)
+		salidaFiltro2 = "static/FiltroGris" +img2
+		cv2.imwrite(salidaFiltro2,Esc_Gri)
+		Urls = [salidaImg,salidaFiltroEq,salidaFiltro2,salidaOriginal]
+
+
+		##
+		#th5 = cv2.adaptiveThreshold(C,255,cv2.ADAPTIVE_THRESH_MEAN_C,\
+                   # cv2.THRESH_BINARY,15,40)
+		#cv2.imwrite("static/Prueba.png",th5)
+
+		return Urls
+
+#Blanco y negro 
 
 class Operadores():
 	def inicio(request):
@@ -563,6 +750,7 @@ class Operadores():
 		filename = fs.save(myfile.name, myfile)
 		#filename2 = fs2.save(myfile2.name, myfile2)
 		file_name = fs.url(filename)
+		print(file_name)
 		#file_name2 = fs2.url(filename2)
 
 		#print(file_name,file_name2)
@@ -571,7 +759,6 @@ class Operadores():
 			max2 = request.POST['max']			
 			resultado =  Algoritmos.Thresholding(file_name,int(min1),int(max2))
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
-
 		if(tipo == "Outlier_C.Stretching"):
 			a = request.POST['a']
 			b = request.POST['b']
@@ -586,7 +773,6 @@ class Operadores():
 			resultado = Algoritmos.Contrast_Stretching(file_name,int(a),int(b))
 
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
-
 		if(tipo == "E.Histograma"):
 			resultado = Algoritmos.ecualizacion_histograma(file_name)
 
@@ -596,7 +782,6 @@ class Operadores():
 			resultado = Algoritmos.operador_logaritmo(file_name,int(c))
 
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
-
 		if(tipo == "O.Raiz"):
 			c = request.POST['c']
 			resultado = Algoritmos.operador_Root(file_name,int(c))
@@ -636,8 +821,6 @@ class Operadores():
 				"image5":"/"+Resultado5,
 				"image6":"/"+Resultado6,
 				} )		
-
-
 		if (tipo == "Add"):
 			#return render(request,'Home.html')
 			myfile2 = request.FILES["file2"]
@@ -678,7 +861,6 @@ class Operadores():
 			resultado = Algoritmos.pixel_division(file_name,file_name2)
 		
 			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
-
 		if (tipo == "AND"):
 			#return render(request,'Home.html')
 			myfile2 = request.FILES["file2"]
@@ -720,12 +902,14 @@ class Operadores():
 			print("xy3-- >", xy3)
 			print("xy4-- >", xy4)
 
-			#tl= Algoritmos.getNumber(xy1)
 			tl, tr, br, bl = Algoritmos.getNumber(xy1),Algoritmos.getNumber(xy4), Algoritmos.getNumber(xy2),Algoritmos.getNumber(xy3)
-			#src = [tl, tr, br, bl]
-			#print("PP ---> ", src)
+	
 			resultado = Algoritmos.RunGetPerspective(tl, tr, br, bl,filename)
-			return render(request,'ResulTOperador.html',{"labels2":tipo,"image":"/"+resultado} )
+			return render(request,'Resultado_Cascada.html',{"labels2":tipo,"image":"/"+resultado[0],
+							"image1":"/"+resultado[1],
+							"image2":"/"+resultado[2], 
+							"image3":"/"+resultado[3], 
+							})
 		return render(request,'Home.html')
 
 
